@@ -9,6 +9,7 @@ esphome:
 wifi:
   ssid: !secret SSID_IoT
   password: !secret PASSWORD_IoT
+  domain: .lab-network.xyz
 
   ap:
     ssid: "${name}"
