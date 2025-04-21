@@ -1,0 +1,85 @@
+substitutions:
+  devicename: laundry-light
+  friendly_name: laundry and Outside Light
+  device_description: laundry and Outside Light
+  
+esphome:
+  name: $devicename
+  comment: ${device_description}
+
+esp8266:
+  board: esp01_1m
+  restore_from_flash: true
+
+wifi:
+  ssid: !secret SSID_IoT
+  password: !secret PASSWORD_IoT
+  power_save_mode: none
+
+# Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${devicename} Fallback Hotspot"
+    password: !secret PASSWORD_fallback
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable web server
+web_server:
+  port: 80
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+
+# Enable OTA
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA
+    
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO16 
+     # mode: INPUT_PULLUP
+      inverted: True
+    id: button_1
+    on_press:
+        - light.toggle: light_1
+
+  - platform: gpio
+    pin:
+      number: GPIO05
+   #   mode: INPUT_PULLUP
+      inverted: True
+    id: button_2
+    on_press:
+        - light.toggle: light_2
+        
+output:
+  - platform: gpio
+    pin: GPIO13
+    id: relay_1
+
+  - platform: gpio
+    pin: GPIO12
+    id: relay_2
+
+light:
+  - platform: binary
+    name: "Laundry Light"
+    id: light_1
+    output: relay_1
+
+  - platform: binary
+    name: "Outside Sideway Light"
+    id: light_2
+    output: relay_2
+
+status_led:
+  pin:
+    number: GPIO02
+    inverted: yes

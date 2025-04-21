@@ -1,0 +1,79 @@
+substitutions:
+  devicename: master-bedroom-light
+  friendly_name: Master Bedroom Light
+  device_description: Master Bedroom Light
+  
+esphome:
+  name: $devicename
+  comment: ${device_description}
+
+esp8266:
+  board: esp01_1m
+  restore_from_flash: true
+
+wifi:
+  ssid: !secret SSID_IoT
+  password: !secret PASSWORD_IoT
+  power_save_mode: none
+
+# Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Master Bedroom Light Fallback"
+    password: !secret PASSWORD_fallback
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable web server
+web_server:
+  port: 80
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+
+# Enable OTA
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO12 
+      mode: INPUT_PULLUP
+      inverted: True
+    id: button_1
+    on_click:
+    - min_length: 50ms
+      max_length: 499ms
+      then:
+        - light.toggle: light_1
+    - min_length: 501ms
+      max_length: 4000ms
+      then:
+        - homeassistant.service:
+            service: input_boolean.toggle
+            data:
+              entity_id: input_boolean.masterbr_blind_open
+output:
+  - platform: gpio
+    pin: GPIO13
+    id: relay_1
+
+light:
+  - platform: binary
+    name: "Master Bedroom Light"
+    id: light_1
+    output: relay_1
+
+status_led:
+  pin:
+    number: GPIO00
+    inverted: yes
+
+
+

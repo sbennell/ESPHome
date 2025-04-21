@@ -1,0 +1,121 @@
+substitutions:
+  devicename: garage-door
+  friendly_name: Garage Door
+  device_description: Garage Door
+  
+esphome:
+  name: $devicename
+  comment: ${device_description}
+
+esp8266:
+  board: esp01_1m
+  restore_from_flash: true 
+
+wifi:
+  ssid: !secret SSID_IoT
+  password: !secret PASSWORD_IoT
+  power_save_mode: none
+
+# Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${devicename} Fallback Hotspot"
+    password: !secret PASSWORD_fallback
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable web server
+web_server:
+  port: 80
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+
+# Enable OTA
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA
+      
+# Example configuration entry
+one_wire:
+  - platform: gpio
+    pin: GPIO14
+  
+sensor:  
+  - platform: dallas_temp
+    address: 0xD40314977952A428
+    name: "Outside Temperature"
+    
+  - platform: dallas_temp
+    address: 0x1A03089779722828
+    name: "Garage Temperature"
+    
+  - platform: dallas_temp
+    address: 0x7E030997790AF928
+    name: "MCU Temperature"    
+
+binary_sensor:
+  - id: Garage_Roller_door_sensor
+    internal: true
+    platform: gpio
+    pin:
+      number: GPIO13
+      mode: INPUT_PULLUP
+      inverted: False
+    device_class: garage_door
+    filters:
+      - delayed_on_off: 20ms
+    
+  - platform: gpio
+    pin:
+      number: GPIO12
+      mode: INPUT_PULLUP
+    name: "Garage Door"
+    device_class: door
+    
+  - platform: gpio
+    pin:
+      number: GPIO2
+      mode: INPUT_PULLUP
+    name: "Front Door"
+    device_class: door
+    
+switch:
+  - platform: gpio
+    pin: GPIO15
+    id: garage_door_relay
+  - platform: template
+    icon: "mdi:arrow-up-down-bold-outline"
+    name: "Front Garage Door Switch"
+    turn_on_action:
+    - switch.turn_on: garage_door_relay
+    - delay: 500ms
+    - switch.turn_off: garage_door_relay
+
+cover:
+  - platform: template
+    name: "Front Garage Door"
+    device_class: garage
+    lambda: |-
+      if (id(Garage_Roller_door_sensor).state) {
+        return COVER_OPEN;
+      } else {
+        return COVER_CLOSED;
+      }
+    open_action:
+      - switch.turn_on: garage_door_relay
+      - delay: 500ms
+      - switch.turn_off: garage_door_relay
+    close_action:
+      - switch.turn_on: garage_door_relay
+      - delay: 500ms
+      - switch.turn_off: garage_door_relay
+    stop_action:
+      - switch.turn_on: garage_door_relay
+      - delay: 500ms
+      - switch.turn_off: garage_door_relay
+

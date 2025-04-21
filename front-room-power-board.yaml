@@ -1,0 +1,126 @@
+substitutions:
+  device_name: front-room-power-board
+  friendly_name: frontrm
+  plug_icon: mdi:power-socket-au
+  usb_icon: mdi:usb-port
+  plug1_restore: ALWAYS_ON
+  plug2_restore: ALWAYS_OFF
+  plug3_restore: ALWAYS_OFF
+  usb_restore: ALWAYS_ON
+  
+  # Higher value gives lower watt readout
+  current_res: "0.00218"
+  # Lower value gives lower voltage readout
+  voltage_div: "765"
+
+esphome:
+  name: ${device_name}
+
+esp8266:
+  board: esp8285
+  restore_from_flash: true 
+  
+wifi:
+  ssid: !secret SSID_IoT
+  password: !secret PASSWORD_IoT
+
+logger:
+
+web_server:
+  port: 80
+  
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+
+# Enable OTA
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "${friendly_name}_button"
+    on_press:
+      - switch.toggle: relay3
+
+  - platform: status
+    name: "${friendly_name}_status"
+
+switch:
+  - platform: gpio
+    id: green_led
+    pin:
+      number: GPIO1
+      inverted: true
+    restore_mode: ALWAYS_OFF
+
+  - platform: gpio
+    name: "Feet Massage"
+    pin: GPIO13
+    id: relay1
+    icon: ${plug_icon}
+    restore_mode: ${plug1_restore}
+
+  - platform: gpio
+    name: "Lamp"
+    pin: GPIO14
+    id: relay2
+    icon: mdi:lamp
+    restore_mode: ${plug2_restore}
+
+  - platform: gpio
+    name: "Couch"
+    pin: GPIO3
+    id: relay3
+    icon: ${plug_icon}
+    restore_mode: ${plug3_restore}
+    on_turn_on:
+      - switch.turn_on: green_led
+    on_turn_off:
+      - switch.turn_off: green_led
+
+  - platform: gpio
+    name: "${friendly_name}_usb"
+    pin: GPIO15
+    id: relayusb
+    icon: ${usb_icon}
+    restore_mode: ${usb_restore}
+
+sensor:
+  - platform: hlw8012
+    sel_pin:
+      number: GPIO12
+      inverted: true
+    cf_pin: GPIO04
+    cf1_pin: GPIO05
+    current:
+      name: "${friendly_name}_current"
+      unit_of_measurement: A
+    voltage:
+      name: "${friendly_name}_voltage"
+      unit_of_measurement: V
+    power:
+      id: ${friendly_name}_wattage
+      name: "${friendly_name}_wattage"
+      unit_of_measurement: W
+    current_resistor: ${current_res}
+    voltage_divider: ${voltage_div}
+    change_mode_every: 8
+    update_interval: 15s
+
+  - platform: total_daily_energy
+    name: "${friendly_name}_daily_energy"
+    power_id: ${friendly_name}_wattage
+    filters:
+      - multiply: 0.001
+    unit_of_measurement: kWh
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time

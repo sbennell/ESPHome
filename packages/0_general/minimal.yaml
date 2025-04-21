@@ -1,0 +1,30 @@
+substitutions:
+  log_level: DEBUG
+
+esphome:
+  name: $devicename
+  comment: ${device_description}
+  area: "${room}"
+
+wifi:
+  ssid: !secret SSID_IoT
+  password: !secret PASSWORD_IoT
+
+  ap:
+    ssid: "${name}"
+    password: !secret PASSWORD_fallback
+
+# Enable logging
+logger:
+  level: "${log_level}"
+  baud_rate: 0  
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+
+# Enable OTA updates
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA

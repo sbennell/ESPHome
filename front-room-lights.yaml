@@ -1,0 +1,136 @@
+substitutions:
+  devicename: front-room-lights
+  device_description: Computer Room Light
+  
+esphome:
+  name: $devicename
+  comment: ${device_description}
+
+esp8266:
+  board: esp01_1m
+  restore_from_flash: true 
+
+wifi:
+  ssid: !secret SSID_IoT
+  password: !secret PASSWORD_IoT
+  power_save_mode: none
+
+# Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "ComputerRoom-01 Fallback Hotspot"
+    password: !secret PASSWORD_fallback
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable web server
+web_server:
+  port: 80
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+
+# Enable OTA
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO5
+      inverted: True
+    id: button_1
+    on_press:
+        - light.toggle: light_1
+
+  - platform: gpio
+    pin:
+      number: GPIO16
+      inverted: True
+    id: button_2
+    on_press:
+        - light.toggle: light_2
+   
+  - platform: gpio
+    pin:
+      number: GPIO3
+      inverted: True
+    id: button_3
+    on_click:
+    - min_length: 50ms
+      max_length: 499ms
+      then:
+        - light.toggle: light_3
+    - min_length: 501ms
+      max_length: 4000ms
+      then:
+        - homeassistant.service:
+            service: input_boolean.toggle
+            data:
+              entity_id: input_boolean.front_room_blinds_to_open
+        
+  - platform: gpio
+    pin:
+      number: GPIO12
+      inverted: True
+    id: button_4
+    on_click:
+    - min_length: 50ms
+      max_length: 499ms
+      then:
+        - light.toggle: light_4
+    - min_length: 501ms
+      max_length: 4000ms
+      then:
+        - homeassistant.service:
+            service: input_boolean.toggle
+            data:
+              entity_id: input_boolean.front_room_blinds_to_close
+    
+output:
+  - platform: gpio
+    pin: GPIO15
+    id: relay_1
+
+  - platform: gpio
+    pin: GPIO14
+    id: relay_2
+    
+  - platform: gpio
+    pin: GPIO4
+    id: relay_3
+
+  - platform: gpio
+    pin: GPIO13
+    id: relay_4
+    
+light:
+  - platform: binary
+    name: "Front Room"
+    id: light_1
+    output: relay_1
+
+  - platform: binary
+    name: "Front Porch"
+    id: light_2
+    output: relay_2
+    
+  - platform: binary
+    name: "Computer Light"
+    id: light_3
+    output: relay_3
+
+  - platform: binary
+    name: "Front Door"
+    id: light_4
+    output: relay_4
+    
+status_led:
+  pin:
+    number: GPIO00
+    inverted: yes

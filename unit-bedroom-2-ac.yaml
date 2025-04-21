@@ -1,0 +1,228 @@
+external_components:
+  - source: github://GrKoR/esphome_aux_ac_component
+    components: [ aux_ac ]
+    refresh: 0s
+
+esphome:
+  name: unit-bedroom-2-ac
+  friendly_name: Unit-Bedroom-2-AC
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+    level: DEBUG
+    baud_rate: 0    
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+
+# Enable OTA
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA
+    
+# Enable web server
+web_server:
+  port: 80
+
+wifi:
+  ssid: !secret SSID_IoT
+  password: !secret PASSWORD_IoT
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Unit-Bedroom-2-Ac"
+    password: "DbZne6Isbe3D"
+
+captive_portal:
+debug:
+
+# UART0 configuration for AUX air conditioner communication
+uart:
+  id: ac_uart_bus
+  # ATTENTION! Use GPIO4 (D2) and GPIO5 (D1) as the TX and RX for NodeMCU-like boards!
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+  baud_rate: 4800
+  data_bits: 8
+  parity: EVEN
+  stop_bits: 1
+
+climate:
+  - platform: aux_ac
+    name: Unit Bedroom 2 AC
+    id: aux_id
+    uart_id: ac_uart_bus
+    period: 7s
+    show_action: true
+    display_inverted: true
+    optimistic: true
+    indoor_temperature:
+      name: Unit Bedroom 2 AC Indoor Temperature
+      id: Unit_Bedroom_2_AC_indoor_temp
+      internal: false
+    display_state:
+      name: Unit Bedroom 2 AC Display State
+      id: Unit_Bedroom_2_AC_display_state
+      internal: false
+    outdoor_temperature:
+      name: Unit Bedroom 2 AC Outdoor Temperature
+      id: Unit_Bedroom_2_AC_outdoor_temp
+      internal: false
+    outbound_temperature:
+      name: Unit Bedroom 2 AC Coolant Outbound Temperature
+      id: Unit_Bedroom_2_AC_outbound_temp
+      internal: false
+    inbound_temperature:
+      name: Unit Bedroom 2 AC Coolant Inbound Temperature
+      id: Unit_Bedroom_2_AC_inbound_temp
+      internal: false
+    compressor_temperature:
+      name: Unit Bedroom 2 AC Compressor Temperature
+      id: Unit_Bedroom_2_AC_strange_temp
+      internal: false
+    defrost_state:
+      name: Unit Bedroom 2 AC Defrost State
+      id: Unit_Bedroom_2_AC_defrost_state
+      internal: false
+    inverter_power:
+      name: Unit Bedroom 2 AC Invertor Power
+      id: Unit_Bedroom_2_AC_inverter_power
+      internal: false
+    preset_reporter:
+      name: Unit Bedroom 2 AC Preset Reporter
+      id: Unit_Bedroom_2_AC_preset_reporter
+      internal: false
+    vlouver_state:
+      name: Unit Bedroom 2 AC VLouvers State
+      id: Unit_Bedroom_2_AC_vlouver_state
+      internal: false
+    visual:
+      min_temperature: 16
+      max_temperature: 32
+      temperature_step: 0.5
+    supported_modes:
+      - HEAT_COOL
+      - COOL
+      - HEAT
+      - DRY
+      - FAN_ONLY
+    custom_fan_modes:
+      - MUTE
+      - TURBO
+    supported_presets:
+      - SLEEP
+    custom_presets:
+      - CLEAN
+      - HEALTH
+      - ANTIFUNGUS
+    supported_swing_modes:
+      - VERTICAL
+      - HORIZONTAL
+      - BOTH
+
+
+sensor:
+  # just wifi signal strength for debug purpose only
+  - platform: wifi_signal
+    name: Unit Bedroom 2 AC WiFi Signal
+    update_interval: 30s
+    unit_of_measurement: "dBm"
+    accuracy_decimals: 0
+
+  - platform: uptime
+    name: Unit Bedroom 2 AC Uptime Sensor
+
+switch:
+  - platform: template
+    name: Unit Bedroom 2 AC Display
+    lambda: |-
+      if (id(Unit_Bedroom_2_AC_display_state).state) {
+        return true;
+      } else {
+        return false;
+      }
+    turn_on_action:
+      - aux_ac.display_on: aux_id
+    turn_off_action:
+      - aux_ac.display_off: aux_id
+
+button:
+  - platform: template
+    name: Unit Bedroom 2 AC VLouver Stop
+    icon: "mdi:circle-small"
+    on_press:
+      - aux_ac.vlouver_stop: aux_id
+    
+  - platform: template
+    name: Unit Bedroom 2 AC VLouver Swing
+    icon: "mdi:pan-vertical"
+    on_press:
+      - aux_ac.vlouver_swing: aux_id
+    
+  - platform: template
+    name: Unit Bedroom 2 AC VLouver Top
+    icon: "mdi:pan-up"
+    on_press:
+      - aux_ac.vlouver_top: aux_id
+    
+  - platform: template
+    name: Unit Bedroom 2 AC VLouver Middle Above
+    icon: "mdi:pan-top-left"
+    on_press:
+      - aux_ac.vlouver_middle_above: aux_id
+    
+  - platform: template
+    name: Unit Bedroom 2 AC VLouver Middle
+    icon: "mdi:pan-left"
+    on_press:
+      - aux_ac.vlouver_middle: aux_id
+    
+  - platform: template
+    name: Unit Bedroom 2 AC VLouver Middle Below
+    icon: "mdi:pan-bottom-left"
+    on_press:
+      - aux_ac.vlouver_middle_below: aux_id
+    
+  - platform: template
+    name: Unit Bedroom 2 AC VLouver Bottom
+    icon: "mdi:pan-down"
+    on_press:
+      - aux_ac.vlouver_bottom: aux_id
+
+
+number:
+  - platform: template
+    name: Unit Bedroom 2 AC Vertical Louvers
+    id: Unit_Bedroom_2_AC_vlouver
+    icon: "mdi:circle-small"
+    mode: "slider"
+    min_value: 0
+    max_value: 6
+    step: 1
+    update_interval: 2s
+    lambda: |-
+      return id(Unit_Bedroom_2_AC_vlouver_state).state;
+    set_action:
+      then:
+        - aux_ac.vlouver_set:
+            id: aux_id
+            position: !lambda "return x;"
+
+  - platform: template
+    name: Unit Bedroom 2 AC Power Limit
+    id: Unit_Bedroom_2_AC_power_limit
+    icon: "mdi:battery-unknown"
+    mode: "slider"
+    min_value: 30
+    max_value: 100
+    step: 1
+    set_action:
+      then:
+        - lambda: !lambda "id(aux_id).powerLimitationOnSequence( x );"

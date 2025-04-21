@@ -1,0 +1,78 @@
+substitutions:
+  devicename: smart-plug-1
+  friendly_name: smart-plug-1
+  device_description: smart-plug-1
+  
+esphome:
+  name: $devicename
+  comment: ${device_description}
+
+esp8266:
+  board: esp01_1m
+  restore_from_flash: true
+
+wifi:
+  ssid: !secret SSID_IoT
+  password: !secret PASSWORD_IoT
+  power_save_mode: none
+
+  manual_ip:
+    static_ip: 172.16.5.50
+    gateway: 172.16.5.1
+    subnet: 255.255.255.0
+
+# Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${devicename} Fallback Hotspot"
+    password: !secret PASSWORD_fallback
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable web server
+web_server:
+  port: 80
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+
+# Enable OTA
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO14
+      mode: INPUT_PULLUP
+      inverted: True
+    id: button_1
+    on_press:
+      - switch.toggle: relay
+
+switch:
+  - platform: gpio
+    id: red_led
+    pin:
+      number: GPIO13
+      inverted: true
+
+  - platform: gpio
+    name: "smart-plug-1"
+    pin: GPIO12
+    id: relay
+    on_turn_on:
+      - switch.turn_on: red_led
+    on_turn_off:
+      - switch.turn_off: red_led
+
+status_led:
+  pin:
+    number: GPIO04
+    inverted: yes
+

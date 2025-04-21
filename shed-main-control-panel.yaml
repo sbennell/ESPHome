@@ -1,0 +1,382 @@
+substitutions:
+  devicename: shed-main-control-panel
+  friendly_name: Shed
+  device_description: Shed Main Control Panel
+  
+esphome:
+  name: $devicename
+  comment: ${device_description}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+i2c:
+  sda: 4
+  scl: 5
+  scan: true
+  id: bus_a
+ 
+ethernet:
+  type: LAN8720
+  mdc_pin: GPIO23
+  mdio_pin: GPIO18
+  clk_mode: GPIO17_OUT
+  phy_addr: 0
+
+# Enable logging
+logger:
+
+# Enable web server
+web_server:
+  port: 80
+  
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+    
+  reboot_timeout: 0s
+
+# Enable OTA
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA
+
+mcp23017:
+    - id: 'mcp23017_led1'
+      address: 0x20
+  
+    - id: 'mcp23017_buttion1'
+      address: 0x21
+
+pcf8574:
+  - id: 'pcf8574_hub_output'
+    address: 0x24
+
+  - id: 'pcf8574_hub_input'
+    address: 0x22
+
+text_sensor:
+# Reports the ESPHome Version with compile date
+  - platform: version
+    name: ${devicename} ESPHome Version
+
+sensor:
+  - platform: uptime
+    name: ${devicename} Uptime
+
+
+# Individual outputs
+
+output:
+#Shed Light 1
+  - platform: gpio
+    id: relay_1
+    pin:
+      pcf8574: pcf8574_hub_output
+      # Use pin number 0
+      number: 0
+      # One of INPUT or OUTPUT
+      mode: OUTPUT
+      inverted: true
+
+#Shed Light 2
+  - platform: gpio
+    id: relay_2
+    pin:
+      pcf8574: pcf8574_hub_output
+      # Use pin number 0
+      number: 1
+      # One of INPUT or OUTPUT
+      mode: OUTPUT
+      inverted: true
+
+#Shed Light 3
+  - platform: gpio
+    id: relay_3
+    pin:
+      pcf8574: pcf8574_hub_output
+      # Use pin number 0
+      number: 2
+      # One of INPUT or OUTPUT
+      mode: OUTPUT
+      inverted: true
+
+#Shed Light 4    
+  - platform: gpio
+    id: relay_4
+    pin:
+      pcf8574: pcf8574_hub_output
+      # Use pin number 0
+      number: 3
+      # One of INPUT or OUTPUT
+      mode: OUTPUT
+      inverted: true
+
+#Back Garage Light     
+  - platform: gpio
+    id: relay_5
+    pin:
+      pcf8574: pcf8574_hub_output
+      # Use pin number 0
+      number: 4
+      # One of INPUT or OUTPUT
+      mode: OUTPUT
+      inverted: true
+
+# Path Light 
+  - platform: gpio
+    id: relay_7
+    pin:
+      pcf8574: pcf8574_hub_output
+      # Use pin number 0
+      number: 6
+      # One of INPUT or OUTPUT
+      mode: OUTPUT
+      inverted: true
+
+switch: 
+#Air Compressor 
+  - platform: gpio
+    name: "Air Compressor"
+    id: relay_6
+    pin:
+      pcf8574: pcf8574_hub_output
+      # Use pin number 0
+      number: 5
+      # One of INPUT or OUTPUT
+      mode: OUTPUT
+      inverted: true
+
+
+#Back Garage Door     
+  - platform: gpio
+    id: relay_8
+    pin:
+      pcf8574: pcf8574_hub_output
+      # Use pin number 0
+      number: 7
+      # One of INPUT or OUTPUT
+      mode: OUTPUT
+      inverted: true
+  - platform: template
+    icon: "mdi:arrow-up-down-bold-outline"
+    id: "BackGarageDoor"
+    turn_on_action:
+    - switch.turn_on: relay_8
+    - delay: 500ms
+    - switch.turn_off: relay_8
+ 
+binary_sensor:     
+#Shed Light 1
+  - platform: gpio
+    id: "input1"
+    pin:
+      pcf8574: pcf8574_hub_input
+      # Use pin number 0
+      number: 0
+      # One of INPUT or OUTPUT
+      mode: INPUT
+      inverted: false
+    on_press:
+      then:
+        - light.toggle: light_1
+
+#Shed Light 2       
+  - platform: gpio
+    id: "input2"
+    pin:
+      pcf8574: pcf8574_hub_input
+      # Use pin number 0
+      number: 1
+      # One of INPUT or OUTPUT
+      mode: INPUT
+      inverted: false
+    on_press:
+      then:
+        - light.toggle: light_2
+
+#Shed Light 3       
+  - platform: gpio
+    id: "input3"
+    pin:
+      pcf8574: pcf8574_hub_input
+      # Use pin number 0
+      number: 2
+      # One of INPUT or OUTPUT
+      mode: INPUT
+      inverted: false
+    on_press:
+      then:
+        - light.toggle: light_3
+
+#Shed Light 4       
+  - platform: gpio
+    id: "input4"
+    pin:
+      pcf8574: pcf8574_hub_input
+      # Use pin number 0
+      number: 3
+      # One of INPUT or OUTPUT
+      mode: INPUT
+      inverted: false
+    on_press:
+      then:
+        - light.toggle: light_4
+
+#Back Garage Light          
+  - platform: gpio
+    id: "input5"
+    pin:
+      pcf8574: pcf8574_hub_input
+      # Use pin number 0
+      number: 4
+      # One of INPUT or OUTPUT
+      mode: INPUT
+      inverted: false
+    on_press:
+      then:
+        - light.toggle: light_5
+
+#Air Compressor            
+  - platform: gpio
+    id: "input6"
+    pin:
+      pcf8574: pcf8574_hub_input
+      # Use pin number 0
+      number: 5
+      # One of INPUT or OUTPUT
+      mode: INPUT
+      inverted: false
+    on_press:
+      then:
+        - switch.toggle: relay_6
+
+# Path Light Switch              
+  - platform: gpio
+    name: "input7"
+    pin:
+      pcf8574: pcf8574_hub_input
+      # Use pin number 0
+      number: 6
+      # One of INPUT or OUTPUT
+      mode: INPUT
+      inverted: false
+    on_press:
+      then:
+        - light.toggle: light_6
+
+# Back Garage Roller door sensor
+  - id: Back_Garage_Roller_door_sensor
+    platform: gpio
+    pin: GPIO14
+    device_class: garage_door
+    filters:
+      - invert:
+      - delayed_on_off: 20ms
+
+#Shed Door sensor            
+  - platform: gpio
+    pin: GPIO33
+    name: "Shed Door Sensor"
+    device_class: door
+    
+#Shed PIR sensor            
+  - platform: gpio
+    pin:
+      mcp23xxx: mcp23017_buttion1
+      # Use pin B6
+      number: 12
+      # One of INPUT or INPUT_PULLUP
+      mode:
+        input: true
+        pullup: true
+      inverted: False
+    name: "Shed PIR 1 sensor"
+    device_class: motion
+    
+#Shed PIR sensor            
+  - platform: gpio
+    pin:
+      mcp23xxx: mcp23017_buttion1
+      # Use pin B7
+      number: 14
+      # One of INPUT or INPUT_PULLUP
+      mode:
+        input: true
+        pullup: true
+      inverted: False
+    name: "Shed PIR 2 sensor"
+    device_class: motion
+
+light:
+#Shed Light 1
+  - platform: binary
+    name: "Shed Light 1"
+    id: light_1
+    output: relay_1
+
+#Shed Light 2
+  - platform: binary
+    name: "Shed Light 2"
+    id: light_2
+    output: relay_2
+
+#Shed Light 3
+  - platform: binary
+    name: "Shed Light 3"
+    id: light_3
+    output: relay_3
+
+#Shed Light 4
+  - platform: binary
+    name: "Shed Light 4"
+    id: light_4
+    output: relay_4
+
+#Outside Light
+  - platform: binary
+    name: "Back Garage Light"
+    id: light_5
+    output: relay_5
+
+#Path Light
+  - platform: binary
+    name: "Path Light"
+    id: light_6
+    output: relay_7
+
+cover:
+#Back Garage Door cover
+  - platform: template
+    name: "Back Garage Door"
+    device_class: garage
+    lambda: |-
+      if (id(Back_Garage_Roller_door_sensor).state) {
+        return COVER_OPEN;
+      } else {
+        return COVER_CLOSED;
+      }
+    open_action:
+      - switch.turn_on: relay_8
+      - delay: 500ms
+      - switch.turn_off: relay_8
+    close_action:
+      - switch.turn_on: relay_8
+      - delay: 500ms
+      - switch.turn_off: relay_8
+    stop_action:
+      - switch.turn_on: relay_8
+      - delay: 500ms
+      - switch.turn_off: relay_8
+
+esp32_ble_tracker:
+  scan_parameters:
+    interval: 1100ms
+    window: 1100ms
+    active: true
+
+bluetooth_proxy:
+  active: true

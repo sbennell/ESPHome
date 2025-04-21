@@ -1,0 +1,74 @@
+substitutions:
+  devicename: bathroom-light
+  friendly_name: bathroom
+  device_description: Bathroom Fan and Lights
+  room: Bathroom
+
+esp8266:
+  board: esp01_1m
+  restore_from_flash: true
+
+packages:
+  minimal: !include /root/config/packages/0_general/minimal.yaml
+  basic: !include /root/config/packages/0_general/basic.yaml
+  arduino: !include /root/config/packages/0_general/arduino.yaml
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO16 
+     # mode: INPUT_PULLUP
+      inverted: True
+    id: button_1
+    on_press:
+        - light.toggle: light_1
+
+  - platform: gpio
+    pin:
+      number: GPIO05
+   #   mode: INPUT_PULLUP
+      inverted: True
+    id: button_2
+    on_press:
+        - switch.toggle: fan_1
+
+  - platform: gpio
+    pin:
+      number: GPIO04
+   #   mode: INPUT_PULLUP
+      inverted: True
+    id: button_3
+    on_press:
+        - light.toggle: light_3
+        
+output:
+  - platform: gpio
+    pin: GPIO13
+    id: relay_1
+
+  - platform: gpio
+    pin: GPIO14
+    id: relay_3
+
+light:
+  - platform: binary
+    name: "Bathroom Light 1"
+    id: light_1
+    output: relay_1
+
+  - platform: binary
+    name: "Bathroom Light 2"
+    id: light_3
+    output: relay_3
+
+# Example configuration entry
+switch:
+  - platform: gpio
+    pin: GPIO12
+    id: fan_1
+    name: "Bathroom Fan"
+
+status_led:
+  pin:
+    number: GPIO02
+    inverted: yes

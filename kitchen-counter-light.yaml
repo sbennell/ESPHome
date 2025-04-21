@@ -1,0 +1,53 @@
+substitutions:
+  devicename: kitchen-counter-light
+  friendly_name: Kitchen Counter Light
+  device_description: Kitchen Counter Light
+  
+esphome:
+  name: $devicename
+  comment: ${device_description}
+
+esp8266:
+  board: esp01_1m
+  restore_from_flash: true
+
+wifi:
+  ssid: !secret SSID_IoT
+  password: !secret PASSWORD_IoT
+  power_save_mode: none
+
+# Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Cabinet Light Fallback Hotspot"
+    password: !secret PASSWORD_fallback
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable web server
+web_server:
+  port: 80
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+
+# Enable OTA
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA
+    
+output:
+  - platform: esp8266_pwm
+    id: pwm_output
+    # frequency: 1000 Hz
+    pin: GPIO12 
+
+light:
+  - platform: monochromatic
+    name: "Counter Light"
+    default_transition_length: 1s
+    output: pwm_output
