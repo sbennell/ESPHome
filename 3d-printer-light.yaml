@@ -1,5 +1,5 @@
 substitutions:
-  devicename: 3d-printer-light
+  device_name: 3d-printer-light
   friendly_name: 3D Printer Light
   device_description: 3D Printer Light
   room: Stewart Desk

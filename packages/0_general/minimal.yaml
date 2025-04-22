@@ -2,7 +2,7 @@ substitutions:
   log_level: DEBUG
 
 esphome:
-  name: $devicename
+  name: $device_name
   comment: ${device_description}
   area: "${room}"
 

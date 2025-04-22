@@ -1,44 +1,18 @@
 substitutions:
-  devicename: front-room-display-2
+  device_name: front-room-display-2
   friendly_name: Front Room Display 2
   device_description: Front Room Display 2
-  
-esphome:
-  name: $devicename
-  comment: ${device_description}
+  room: Front Room
 
 esp8266:
   board: esp01_1m
-  restore_from_flash: true 
-  
-wifi:
-  ssid: !secret SSID_IoT
-  password: !secret PASSWORD_IoT
-  power_save_mode: none
+  restore_from_flash: true
 
-# Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "computerroom-03 Fallback Hotspot"
-    password: !secret PASSWORD_fallback
+packages:
+  minimal: !include /root/config/packages/0_general/minimal.yaml
+  basic: !include /root/config/packages/0_general/basic.yaml
+  arduino: !include /root/config/packages/0_general/arduino.yaml
 
-captive_portal:
-
-# Enable logging
-logger:
-
-# Enable web server
-web_server:
-  port: 80
-
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret encryptionkey
-
-# Enable OTA
-ota:
-  - platform: esphome
-    password: !secret ESPHomeOTA
     
 output:
   - platform: esp8266_pwm
@@ -48,6 +22,6 @@ output:
 
 light:
   - platform: monochromatic
-    name: "Display Cabinet 2 Light"
+    name: "Display Cabinet 1 Light"
     default_transition_length: 1s
     output: pwm_output

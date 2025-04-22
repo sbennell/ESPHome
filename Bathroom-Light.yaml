@@ -1,5 +1,5 @@
 substitutions:
-  devicename: bathroom-light
+  device_name: bathroom-light
   friendly_name: bathroom
   device_description: Bathroom Fan and Lights
   room: Bathroom
