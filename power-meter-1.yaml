@@ -1,11 +1,7 @@
-esphome:
-  name: power-meter-1
-  friendly_name: power-meter-1
-
-external_components:
-  - source: github://emporia-vue-local/esphome@dev
-    components:
-      - emporia_vue
+substitutions:
+  device_name: power-meter-1
+  friendly_name: Power  Mmeter 1
+  room: House
 
 esp32:
   board: esp32dev
@@ -13,34 +9,16 @@ esp32:
     type: esp-idf
     version: recommended
 
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret encryptionkey
+packages:
+  minimal: !include /root/config/packages/0_general/minimal.yaml
+  #basic: !include /root/config/packages/0_general/basic.yaml
+  #arduino: !include /root/config/packages/0_general/arduino.yaml
 
-  services:
-    - service: play_rtttl
-      variables:
-        song_str: string
-      then:
-        - rtttl.play:
-            rtttl: !lambda 'return song_str;'
+external_components:
+  - source: github://emporia-vue-local/esphome@dev
+    components:
+      - emporia_vue
 
-ota:
-  - platform: esphome
-    password: !secret ESPHomeOTA
-
-# Enable logging
-logger:
-  logs:
-    # by default, every reading will be printed to the UART, which is very slow
-    # This will disable printing the readings but keep other helpful messages
-    sensor: INFO
-
-wifi:
-  ssid: !secret SSID_IoT
-  password: !secret PASSWORD_IoT
-  power_save_mode: none
 
 preferences:
   # please also make sure `restore: false` is set on all `platform: total_daily_energy`
@@ -106,10 +84,6 @@ time:
 
 
 sensor:
-
-  - platform: uptime
-    name: "Power Meter Uptime"
-
   - platform: emporia_vue
     i2c_id: i2c_a
     phases:

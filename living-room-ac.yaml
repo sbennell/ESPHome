@@ -32,7 +32,7 @@ uart:
 
 climate:
   - platform: aux_ac
-    name: Living AC
+    name: "${friendly_name}"
     id: aux_id
     uart_id: ac_uart_bus
     period: 7s
@@ -40,43 +40,43 @@ climate:
     display_inverted: true
     optimistic: true
     indoor_temperature:
-      name: Living AC Indoor Temperature
+      name: "${friendly_name} Indoor Temperature"
       id: Living_AC_indoor_temp
       internal: false
     display_state:
-      name: Living AC Display State
+      name: "${friendly_name} Display State"
       id: Living_AC_display_state
       internal: false
     outdoor_temperature:
-      name: Living AC Outdoor Temperature
+      name: "${friendly_name} Outdoor Temperature"
       id: Living_AC_outdoor_temp
       internal: false
     outbound_temperature:
-      name: Living AC Coolant Outbound Temperature
+      name: "${friendly_name} Coolant Outbound Temperature"
       id: Living_AC_outbound_temp
       internal: false
     inbound_temperature:
-      name: Living AC Coolant Inbound Temperature
+      name: "${friendly_name} Coolant Inbound Temperature"
       id: Living_AC_inbound_temp
       internal: false
     compressor_temperature:
-      name: Living AC Compressor Temperature
+      name: "${friendly_name} Compressor Temperature"
       id: Living_AC_strange_temp
       internal: false
     defrost_state:
-      name: Living AC Defrost State
+      name: "${friendly_name} Defrost State"
       id: Living_AC_defrost_state
       internal: false
     inverter_power:
-      name: Living AC Invertor Power
+      name: "${friendly_name} Invertor Power"
       id: Living_AC_inverter_power
       internal: false
     preset_reporter:
-      name: Living AC Preset Reporter
+      name: "${friendly_name} Preset Reporter"
       id: Living_AC_preset_reporter
       internal: false
     vlouver_state:
-      name: Living AC VLouvers State
+      name: "${friendly_name} VLouvers State"
       id: Living_AC_vlouver_state
       internal: false
     visual:
@@ -103,21 +103,9 @@ climate:
       - HORIZONTAL
       - BOTH
 
-
-sensor:
-  # just wifi signal strength for debug purpose only
-  - platform: wifi_signal
-    name: Living AC WiFi Signal
-    update_interval: 30s
-    unit_of_measurement: "dBm"
-    accuracy_decimals: 0
-
-  - platform: uptime
-    name: Living AC Uptime Sensor
-
 switch:
   - platform: template
-    name: Living AC Display
+    name: "${friendly_name} Display"
     lambda: |-
       if (id(Living_AC_display_state).state) {
         return true;
@@ -131,43 +119,43 @@ switch:
 
 button:
   - platform: template
-    name: Living AC VLouver Stop
+    name: "${friendly_name} VLouver Stop"
     icon: "mdi:circle-small"
     on_press:
       - aux_ac.vlouver_stop: aux_id
     
   - platform: template
-    name: Living AC VLouver Swing
+    name: "${friendly_name} VLouver Swing"
     icon: "mdi:pan-vertical"
     on_press:
       - aux_ac.vlouver_swing: aux_id
     
   - platform: template
-    name: Living AC VLouver Top
+    name: "${friendly_name} VLouver Top"
     icon: "mdi:pan-up"
     on_press:
       - aux_ac.vlouver_top: aux_id
     
   - platform: template
-    name: Living AC VLouver Middle Above
+    name: "${friendly_name} VLouver Middle Above"
     icon: "mdi:pan-top-left"
     on_press:
       - aux_ac.vlouver_middle_above: aux_id
     
   - platform: template
-    name: Living AC VLouver Middle
+    name: "${friendly_name} VLouver Middle"
     icon: "mdi:pan-left"
     on_press:
       - aux_ac.vlouver_middle: aux_id
     
   - platform: template
-    name: Living AC VLouver Middle Below
+    name: "${friendly_name} VLouver Middle Below"
     icon: "mdi:pan-bottom-left"
     on_press:
       - aux_ac.vlouver_middle_below: aux_id
     
   - platform: template
-    name: Living AC VLouver Bottom
+    name: "${friendly_name} VLouver Bottom"
     icon: "mdi:pan-down"
     on_press:
       - aux_ac.vlouver_bottom: aux_id
@@ -175,7 +163,7 @@ button:
 
 number:
   - platform: template
-    name: Living AC Vertical Louvers
+    name: "${friendly_name} Vertical Louvers"
     id: Living_AC_vlouver
     icon: "mdi:circle-small"
     mode: "slider"
@@ -192,7 +180,7 @@ number:
             position: !lambda "return x;"
 
   - platform: template
-    name: Living AC Power Limit
+    name: "${friendly_name} Power Limit"
     id: Living_AC_power_limit
     icon: "mdi:battery-unknown"
     mode: "slider"
