@@ -1,0 +1,36 @@
+time:
+  # Sync time with HA
+  - platform: homeassistant
+    id: time_homeassistant
+    timezone: "Australia/Melbourne"
+    on_time_sync:
+      - component.update: sensor_uptime_timestamp
+
+# Sensors with general information.
+sensor:
+  # Uptime sensor (internal only).
+  - platform: uptime
+    id: sensor_uptime
+  # Uptime timestamp
+  - platform: template
+    id: sensor_uptime_timestamp
+    name: "Uptime"
+    device_class: "timestamp"
+    accuracy_decimals: 0
+    update_interval: never
+    lambda: |-
+      static float timestamp = (
+        id(time_homeassistant).utcnow().timestamp - id(sensor_uptime).state
+      );
+      return timestamp;
+    entity_category: diagnostic
+
+button:
+  # restart button
+  - platform: restart
+    name: "Restart"
+    id: restart_button
+  # safe mode button
+  - platform: safe_mode
+    name: "Safe Mode"
+    entity_category: diagnostic

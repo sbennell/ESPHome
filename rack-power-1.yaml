@@ -1,57 +1,22 @@
 substitutions:
-  devicename: rack-power-1
-  ip: 192.168.xx.xx
+  device_name: rack-power-1
+  friendly_name: Rack Power 1
+  device_description: Rack Power 1
+  room: rack
+
   channel_1: Relay 1
   channel_2: Relay 2
-
-  ssid: !secret SSID_IoT
-  password: !secret PASSWORD_IoT
-
   max_power: "2000.0"
   max_temp: "70.0"
-
-esphome:
-  name: ${devicename}
-
+ 
 esp8266:
   board: esp01_1m
   restore_from_flash: true
 
-wifi:
-  ssid: ${ssid}
-  password: ${password}
-  power_save_mode: HIGH # for ESP8266 LOW/HIGH are mixed up, esphome/issues/issues/1532
-
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: ${devicename}
-    password: ${password}
-
-
-captive_portal:
-
-# Enable logging
-logger:
-  level: DEBUG
-
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret encryptionkey
-
-# Enable OTA
-ota:
-  - platform: esphome
-    password: !secret ESPHomeOTA
-
-
-web_server:
-  port: 80
-
-time:
-  - platform: sntp
-    id: my_time
+packages:
+  minimal: !include /root/config/packages/0_general/minimal.yaml
+  basic: !include /root/config/packages/0_general/basic.yaml
+  arduino: !include /root/config/packages/0_general/arduino.yaml
 
 i2c:
   sda: GPIO12

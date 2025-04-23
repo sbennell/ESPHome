@@ -1,48 +1,25 @@
 substitutions:
-  devicename: shed-main-control-panel
+  device_name: shed-main-control-panel
   friendly_name: Shed
   device_description: Shed Main Control Panel
-  
-esphome:
-  name: $devicename
-  comment: ${device_description}
+  room: Shed
 
 esp32:
   board: esp32dev
   framework:
     type: arduino
 
+packages:
+  minimal: !include /root/config/packages/0_general/minimal_eth.yaml
+  basic: !include /root/config/packages/0_general/basic_eth.yaml
+  arduino: !include /root/config/packages/0_general/arduino_eth.yaml
+  bt_proxy: !include /root/config/packages/0_general/bt_proxy.yaml
+
 i2c:
   sda: 4
   scl: 5
   scan: true
   id: bus_a
- 
-ethernet:
-  type: LAN8720
-  mdc_pin: GPIO23
-  mdio_pin: GPIO18
-  clk_mode: GPIO17_OUT
-  phy_addr: 0
-
-# Enable logging
-logger:
-
-# Enable web server
-web_server:
-  port: 80
-  
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret encryptionkey
-    
-  reboot_timeout: 0s
-
-# Enable OTA
-ota:
-  - platform: esphome
-    password: !secret ESPHomeOTA
 
 mcp23017:
     - id: 'mcp23017_led1'
@@ -58,18 +35,8 @@ pcf8574:
   - id: 'pcf8574_hub_input'
     address: 0x22
 
-text_sensor:
-# Reports the ESPHome Version with compile date
-  - platform: version
-    name: ${devicename} ESPHome Version
-
-sensor:
-  - platform: uptime
-    name: ${devicename} Uptime
-
 
 # Individual outputs
-
 output:
 #Shed Light 1
   - platform: gpio
@@ -371,12 +338,3 @@ cover:
       - switch.turn_on: relay_8
       - delay: 500ms
       - switch.turn_off: relay_8
-
-esp32_ble_tracker:
-  scan_parameters:
-    interval: 1100ms
-    window: 1100ms
-    active: true
-
-bluetooth_proxy:
-  active: true

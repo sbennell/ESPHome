@@ -1,47 +1,17 @@
 substitutions:
-  devicename: guest-bedroom-powerpoint
+  device_name: guest-bedroom-powerpoint
   friendly_name: Bradley PC Power Monitoring
   device_description: Bradley PC Power Monitoring
+  room: Stewart Desk
 
-esphome:
-  name: $devicename
-  comment: ${device_description}
-  
 esp8266:
   board: esp01_1m
   restore_from_flash: true
 
-wifi:
-  ssid: !secret SSID_IoT
-  password: !secret PASSWORD_IoT
-
-# Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "James PC Fallback Hotspot"
-    password: !secret PASSWORD_fallback
-
-captive_portal:
-
-# Enable logging
-logger:
-
-# Web server can be removed after enabling HA API
-web_server:
-  port: 80
-
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret encryptionkey
-
-ota:
-  - platform: esphome
-    password: !secret ESPHomeOTA
-
-# Enable time component for use by daily power sensor
-time:
-  - platform: homeassistant
-    id: homeassistant_time
+packages:
+  minimal: !include /root/config/packages/0_general/minimal.yaml
+  basic: !include /root/config/packages/0_general/basic.yaml
+  arduino: !include /root/config/packages/0_general/arduino.yaml
 
 sensor:
 # Reports the Current, Voltage, and Power used by the plugged-in device
@@ -85,7 +55,7 @@ binary_sensor:
     pin:
       number: GPIO03
       inverted: True
-    id: button # Name to make button visible in HA
+    id: button1 # Name to make button visible in HA
     on_press:
       - switch.toggle: relay
 

@@ -1,49 +1,24 @@
+substitutions:
+  device_name: living-room-ac
+  friendly_name: Living Room AC
+  device_description: Living Room AC
+  room: Living Room
+  
 external_components:
   - source: github://GrKoR/esphome_aux_ac_component
     components: [ aux_ac ]
     refresh: 0s
 
-esphome:
-  name: living-room-ac
-  friendly_name: living-room-ac
-
 esp32:
   board: esp32dev
   framework:
+
     type: arduino
-
-# Enable logging
-logger:
-    level: DEBUG
-    baud_rate: 0    
-
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret encryptionkey
-
-# Enable OTA
-ota:
-  - platform: esphome
-    password: !secret ESPHomeOTA
-    
-# Enable web server
-web_server:
-  port: 80
-
-wifi:
-  ssid: !secret SSID_IoT
-  password: !secret PASSWORD_IoT
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "house-living-ac"
-    password: "DbZne6Isbe3D"
-
-captive_portal:
-debug:
-
-
+packages:
+  minimal: !include /root/config/packages/0_general/minimal.yaml
+  basic: !include /root/config/packages/0_general/basic.yaml
+  bt_proxy: !include /root/config/packages/0_general/bt_proxy.yaml
+  
 # UART0 configuration for AUX air conditioner communication
 uart:
   id: ac_uart_bus

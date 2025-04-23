@@ -1,67 +1,23 @@
 substitutions:
   device_name: "stewart-desk-power-monitoring"
   friendly_name: "Stewart Desk Power"
-  # Allows ESP device to be automatically lined to an 'Area' in Home Assistant. Typically used for areas such as 'Lounge Room', 'Kitchen' etc
+  device_description: Stewart Desk Power Monitoring
   room: "Stewart Desk"
-  project_name: "Athom Technology.Smart Plug V2"
-  project_version: "2.0.1"
   relay_restore_mode: "ALWAYS_ON"
   sensor_update_interval: "10s"
   # Current Limit in Amps. AU Plug = 10. IL, BR, EU, UK, US Plug = 16.
   current_limit : "10"
   # Set timezone of the smart plug. Useful if the plug is in a location different to the HA server. Can be entered in unix Country/Area format (i.e. "Australia/Sydney")
   timezone: "Australia/Melbourne"
-  # Enables faster network connections, with last connected SSID being connected to and no full scan for SSID being undertaken
-  wifi_fast_connect: "false" 
-  device_description: Stewart Desk Power IE Screens and Soldering Kit
-
-esphome:
-  name: "${device_name}"
-  area: "${room}"
-  comment: ${device_description}
-  project:
-    name: "${project_name}"
-    version: "${project_version}"
-
+  
 esp8266:
   board: esp8285
   restore_from_flash: true
 
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret encryptionkey
-    
-# Enable OTA
-ota:
-  - platform: esphome
-    password: !secret ESPHomeOTA
-
-logger:
-  baud_rate: 0
-
-mdns:
-  disabled: false
-
-web_server:
-  port: 80
-
-wifi:
-  ssid: !secret SSID_IoT
-  password: !secret PASSWORD_IoT
-  power_save_mode: none
-  fast_connect: "${wifi_fast_connect}"
-
-
-  ap: {} # This spawns an AP with the device name and mac address with no password.
-
-preferences:
-  flash_write_interval: 5min
-
-captive_portal:
-
-dashboard_import:
-  package_import_url: github://athom-tech/athom-configs/athom-smart-plug-v2.yaml
+packages:
+  minimal: !include /root/config/packages/0_general/minimal.yaml
+  basic: !include /root/config/packages/0_general/basic.yaml
+  arduino: !include /root/config/packages/0_general/arduino.yaml
 
 uart:
   rx_pin: RX

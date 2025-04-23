@@ -1,0 +1,29 @@
+substitutions:
+  log_level: DEBUG
+
+esphome:
+  name: $device_name
+  comment: ${device_description}
+  area: "${room}"
+
+ethernet:
+  type: LAN8720
+  mdc_pin: GPIO23
+  mdio_pin: GPIO18
+  clk_mode: GPIO17_OUT
+  phy_addr: 0
+
+# Enable logging
+logger:
+  level: "${log_level}"
+  baud_rate: 0  
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryptionkey
+
+# Enable OTA updates
+ota:
+  - platform: esphome
+    password: !secret ESPHomeOTA
