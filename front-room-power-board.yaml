@@ -107,7 +107,3 @@ sensor:
     filters:
       - multiply: 0.001
     unit_of_measurement: kWh
-
-time:
-  - platform: homeassistant
-    id: homeassistant_time
