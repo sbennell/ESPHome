@@ -14,7 +14,7 @@ sensor:
   # Uptime timestamp
   - platform: template
     id: sensor_uptime_timestamp
-    name: "Uptime"
+    name: "${friendly_name} Uptime"
     device_class: "timestamp"
     accuracy_decimals: 0
     update_interval: never
@@ -26,11 +26,11 @@ sensor:
     entity_category: diagnostic
 
 button:
-  # restart button
   - platform: restart
-    name: "Restart"
-    id: restart_button
-  # safe mode button
+    name: "${friendly_name} Restart"
+    entity_category: diagnostic
+
   - platform: safe_mode
-    name: "Safe Mode"
+    name: "${friendly_name} Safe Mode"
+    internal: false
     entity_category: diagnostic

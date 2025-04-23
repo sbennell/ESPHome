@@ -1,54 +1,30 @@
+substitutions:
+  device_name: unit-bedroom-2-ac
+  friendly_name: Unit Bedroom 2 AC
+  device_description: Unit Bedroom 2 AC
+  room: Unit Bedroom 2
+  
 external_components:
   - source: github://GrKoR/esphome_aux_ac_component
     components: [ aux_ac ]
     refresh: 0s
 
-esphome:
-  name: unit-bedroom-2-ac
-  friendly_name: Unit-Bedroom-2-AC
-
 esp32:
   board: esp32dev
   framework:
+
     type: arduino
-
-# Enable logging
-logger:
-    level: DEBUG
-    baud_rate: 0    
-
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret encryptionkey
-
-# Enable OTA
-ota:
-  - platform: esphome
-    password: !secret ESPHomeOTA
-    
-# Enable web server
-web_server:
-  port: 80
-
-wifi:
-  ssid: !secret SSID_IoT
-  password: !secret PASSWORD_IoT
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "Unit-Bedroom-2-Ac"
-    password: "DbZne6Isbe3D"
-
-captive_portal:
-debug:
-
+packages:
+  minimal: !include /root/config/packages/0_general/minimal.yaml
+  basic: !include /root/config/packages/0_general/basic.yaml
+  bt_proxy: !include /root/config/packages/0_general/bt_proxy.yaml
+  
 # UART0 configuration for AUX air conditioner communication
 uart:
   id: ac_uart_bus
   # ATTENTION! Use GPIO4 (D2) and GPIO5 (D1) as the TX and RX for NodeMCU-like boards!
-  tx_pin: GPIO1
-  rx_pin: GPIO3
+  tx_pin: GPIO22
+  rx_pin: GPIO21
   baud_rate: 4800
   data_bits: 8
   parity: EVEN
@@ -56,7 +32,7 @@ uart:
 
 climate:
   - platform: aux_ac
-    name: Unit Bedroom 2 AC
+    name: Living AC
     id: aux_id
     uart_id: ac_uart_bus
     period: 7s
@@ -64,44 +40,44 @@ climate:
     display_inverted: true
     optimistic: true
     indoor_temperature:
-      name: Unit Bedroom 2 AC Indoor Temperature
-      id: Unit_Bedroom_2_AC_indoor_temp
+      name: Living AC Indoor Temperature
+      id: Living_AC_indoor_temp
       internal: false
     display_state:
-      name: Unit Bedroom 2 AC Display State
-      id: Unit_Bedroom_2_AC_display_state
+      name: Living AC Display State
+      id: Living_AC_display_state
       internal: false
     outdoor_temperature:
-      name: Unit Bedroom 2 AC Outdoor Temperature
-      id: Unit_Bedroom_2_AC_outdoor_temp
+      name: Living AC Outdoor Temperature
+      id: Living_AC_outdoor_temp
       internal: false
     outbound_temperature:
-      name: Unit Bedroom 2 AC Coolant Outbound Temperature
-      id: Unit_Bedroom_2_AC_outbound_temp
+      name: Living AC Coolant Outbound Temperature
+      id: Living_AC_outbound_temp
       internal: false
     inbound_temperature:
-      name: Unit Bedroom 2 AC Coolant Inbound Temperature
-      id: Unit_Bedroom_2_AC_inbound_temp
+      name: Living AC Coolant Inbound Temperature
+      id: Living_AC_inbound_temp
       internal: false
     compressor_temperature:
-      name: Unit Bedroom 2 AC Compressor Temperature
-      id: Unit_Bedroom_2_AC_strange_temp
+      name: Living AC Compressor Temperature
+      id: Living_AC_strange_temp
       internal: false
     defrost_state:
-      name: Unit Bedroom 2 AC Defrost State
-      id: Unit_Bedroom_2_AC_defrost_state
+      name: Living AC Defrost State
+      id: Living_AC_defrost_state
       internal: false
     inverter_power:
-      name: Unit Bedroom 2 AC Invertor Power
-      id: Unit_Bedroom_2_AC_inverter_power
+      name: Living AC Invertor Power
+      id: Living_AC_inverter_power
       internal: false
     preset_reporter:
-      name: Unit Bedroom 2 AC Preset Reporter
-      id: Unit_Bedroom_2_AC_preset_reporter
+      name: Living AC Preset Reporter
+      id: Living_AC_preset_reporter
       internal: false
     vlouver_state:
-      name: Unit Bedroom 2 AC VLouvers State
-      id: Unit_Bedroom_2_AC_vlouver_state
+      name: Living AC VLouvers State
+      id: Living_AC_vlouver_state
       internal: false
     visual:
       min_temperature: 16
@@ -131,19 +107,19 @@ climate:
 sensor:
   # just wifi signal strength for debug purpose only
   - platform: wifi_signal
-    name: Unit Bedroom 2 AC WiFi Signal
+    name: Living AC WiFi Signal
     update_interval: 30s
     unit_of_measurement: "dBm"
     accuracy_decimals: 0
 
   - platform: uptime
-    name: Unit Bedroom 2 AC Uptime Sensor
+    name: Living AC Uptime Sensor
 
 switch:
   - platform: template
-    name: Unit Bedroom 2 AC Display
+    name: Living AC Display
     lambda: |-
-      if (id(Unit_Bedroom_2_AC_display_state).state) {
+      if (id(Living_AC_display_state).state) {
         return true;
       } else {
         return false;
@@ -155,43 +131,43 @@ switch:
 
 button:
   - platform: template
-    name: Unit Bedroom 2 AC VLouver Stop
+    name: Living AC VLouver Stop
     icon: "mdi:circle-small"
     on_press:
       - aux_ac.vlouver_stop: aux_id
     
   - platform: template
-    name: Unit Bedroom 2 AC VLouver Swing
+    name: Living AC VLouver Swing
     icon: "mdi:pan-vertical"
     on_press:
       - aux_ac.vlouver_swing: aux_id
     
   - platform: template
-    name: Unit Bedroom 2 AC VLouver Top
+    name: Living AC VLouver Top
     icon: "mdi:pan-up"
     on_press:
       - aux_ac.vlouver_top: aux_id
     
   - platform: template
-    name: Unit Bedroom 2 AC VLouver Middle Above
+    name: Living AC VLouver Middle Above
     icon: "mdi:pan-top-left"
     on_press:
       - aux_ac.vlouver_middle_above: aux_id
     
   - platform: template
-    name: Unit Bedroom 2 AC VLouver Middle
+    name: Living AC VLouver Middle
     icon: "mdi:pan-left"
     on_press:
       - aux_ac.vlouver_middle: aux_id
     
   - platform: template
-    name: Unit Bedroom 2 AC VLouver Middle Below
+    name: Living AC VLouver Middle Below
     icon: "mdi:pan-bottom-left"
     on_press:
       - aux_ac.vlouver_middle_below: aux_id
     
   - platform: template
-    name: Unit Bedroom 2 AC VLouver Bottom
+    name: Living AC VLouver Bottom
     icon: "mdi:pan-down"
     on_press:
       - aux_ac.vlouver_bottom: aux_id
@@ -199,8 +175,8 @@ button:
 
 number:
   - platform: template
-    name: Unit Bedroom 2 AC Vertical Louvers
-    id: Unit_Bedroom_2_AC_vlouver
+    name: Living AC Vertical Louvers
+    id: Living_AC_vlouver
     icon: "mdi:circle-small"
     mode: "slider"
     min_value: 0
@@ -208,7 +184,7 @@ number:
     step: 1
     update_interval: 2s
     lambda: |-
-      return id(Unit_Bedroom_2_AC_vlouver_state).state;
+      return id(Living_AC_vlouver_state).state;
     set_action:
       then:
         - aux_ac.vlouver_set:
@@ -216,8 +192,8 @@ number:
             position: !lambda "return x;"
 
   - platform: template
-    name: Unit Bedroom 2 AC Power Limit
-    id: Unit_Bedroom_2_AC_power_limit
+    name: Living AC Power Limit
+    id: Living_AC_power_limit
     icon: "mdi:battery-unknown"
     mode: "slider"
     min_value: 30

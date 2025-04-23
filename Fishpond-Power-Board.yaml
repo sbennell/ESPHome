@@ -36,9 +36,6 @@ binary_sensor:
     on_press:
       - switch.toggle: relay3
 
-  - platform: status
-    name: "${friendly_name}_status"
-
 switch:
   - platform: gpio
     id: green_led
@@ -107,7 +104,3 @@ sensor:
     filters:
       - multiply: 0.001
     unit_of_measurement: kWh
-
-time:
-  - platform: homeassistant
-    id: homeassistant_time
