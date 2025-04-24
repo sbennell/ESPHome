@@ -17,6 +17,7 @@ text_sensor:
   - platform: template
     name: "${friendly_name} Uptime"
     id: sensor_uptime_timestamp
+    internal: true
     entity_category: diagnostic
     lambda: |-
       int seconds = (id(sensor_uptime).state);
