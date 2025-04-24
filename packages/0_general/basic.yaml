@@ -56,6 +56,7 @@ sensor:
 button:
   - platform: restart
     name: "${friendly_name} Restart"
+    id: restart_button
     entity_category: config
 
   - platform: safe_mode

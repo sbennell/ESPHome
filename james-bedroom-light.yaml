@@ -23,7 +23,7 @@ esp8266:
 packages:
   minimal: !include /root/config/packages/0_general/minimal.yaml
   basic: !include /root/config/packages/0_general/basic.yaml
-  #arduino: !include /root/config/packages/0_general/arduino.yaml
+  arduino: !include /root/config/packages/0_general/arduino.yaml
 
 # based on the config of pimw from community post https://community.home-assistant.io/t/shelly-2-dimmer/232324/18
 uart:
@@ -45,7 +45,7 @@ event:
 
 light:
   - platform: shelly_dimmer
-    name: ${devicename}
+    name: ${device_name}
     id: dimmer
     icon: ${light_icon}
     leading_edge: ${leading_edge}
@@ -109,7 +109,7 @@ sensor:
               - homeassistant.service:
                   service: persistent_notification.create
                   data:
-                    title: Message from ${devicename}
+                    title: Message from ${device_name}
                   data_template:
                     message: Switch turned off because temperature exceeded ${max_temp}°C
     on_value_range:
@@ -119,7 +119,7 @@ sensor:
           - homeassistant.service:
               service: persistent_notification.create
               data:
-                title: Message from ${devicename}
+                title: Message from ${device_name}
               data_template:
                 message: Temperature exceeded ${max_temp}°C
   - platform: resistance
@@ -286,7 +286,7 @@ binary_sensor:
                 - homeassistant.event:
                     event: esphome.button_pressed
                     data:
-                      device: ${devicename}
+                      device: ${device_name}
                       click_type: restart
                       button: "1"
           - button.press: restart_button
@@ -301,7 +301,7 @@ binary_sensor:
           - homeassistant.event:
               event: esphome.button_pressed
               data:
-                device: ${devicename}
+                device: ${device_name}
                 click_type: double
           - event.trigger:
               id: event_entity
@@ -327,7 +327,7 @@ binary_sensor:
           - homeassistant.event:
               event: esphome.button_pressed
               data:
-                device: ${devicename}
+                device: ${device_name}
                 click_type: double
           - event.trigger:
               id: event_entity
@@ -349,7 +349,7 @@ binary_sensor:
           - homeassistant.event:
               event: esphome.button_pressed
               data:
-                device: ${devicename}
+                device: ${device_name}
                 click_type: short
           - event.trigger:
               id: event_entity
@@ -368,7 +368,7 @@ binary_sensor:
           - homeassistant.event:
               event: esphome.button_pressed
               data:
-                device: ${devicename}
+                device: ${device_name}
                 click_type: long
           - event.trigger:
               id: event_entity
@@ -395,7 +395,7 @@ binary_sensor:
         - homeassistant.event:
             event: esphome.button_pressed
             data:
-              device: ${devicename}
+              device: ${device_name}
               click_type: release
         - event.trigger:
             id: event_entity
