@@ -14,10 +14,7 @@ preferences:
 packages:
   minimal: !include /root/config/packages/0_general/minimal.yaml
   basic: !include /root/config/packages/0_general/basic.yaml
-  arduino: !include /root/config/packages/0_general/arduino.yaml
-
-#dashboard_import:
-#  package_import_url: github://athom-tech/athom-configs/athom-presence-sensor.yaml
+ # arduino: !include /root/config/packages/0_general/arduino.yaml
 
 light:
   - platform: status_led

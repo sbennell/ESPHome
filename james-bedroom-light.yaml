@@ -1,5 +1,5 @@
 substitutions:
-  devicename: "james-bedroom-light"
+  device_name: "james-bedroom-light"
   friendly_name: "James Bedroom light"
   device_description: "James Bedroom Light - Shelly Dimmer 2"
   room: "James Bedroom"

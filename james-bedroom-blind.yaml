@@ -1,5 +1,5 @@
 substitutions:
-  devicename: james-bedroom-blind
+  device_name: james-bedroom-blind
   friendly_name: James Bedroom Blind
   device_description: James Bedroom Blind - Shelly 2.5
   room: James Bedroom
