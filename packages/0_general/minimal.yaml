@@ -12,7 +12,7 @@ wifi:
   domain: .lab-network.xyz
 
   ap:
-    ssid: "${name}"
+    ssid: "${device_name}"
     password: !secret PASSWORD_fallback
 
 # Enable logging

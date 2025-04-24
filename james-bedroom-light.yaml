@@ -51,7 +51,7 @@ light:
     leading_edge: ${leading_edge}
     min_brightness: ${min_brightness}
     max_brightness: ${max_brightness}
-    restore_mode: ${restore_mode_light}
+    restore_mode: RESTORE_DEFAULT_ON  # Restore last brightness on reboot
     default_transition_length: 1s
     gamma_correct: ${gamma_correct}
     power:
@@ -66,8 +66,30 @@ light:
     firmware:
       version: "51.6"
       update: true
-    # set the global for the dim action based on the brightness value
+
+    on_turn_on:
+      - lambda: |-
+          // Restore the last saved brightness when turned on
+          id(dimmer).set_brightness(id(last_brightness));
+          
     on_state:
+      # Track the brightness when the light is turned off
+      - if:
+          condition:
+            - lambda: "return (id(dimmer).remote_values.get_brightness() > 0);"
+          then:
+            - globals.set:
+                id: last_brightness
+                value: !lambda "return id(dimmer).remote_values.get_brightness();"
+      # If the brightness is 0 (light turned off), store the brightness value
+      - if:
+          condition:
+            - lambda: "return (id(dimmer).remote_values.get_brightness() == 0);"
+          then:
+            - globals.set:
+                id: last_brightness
+                value: !lambda "return id(dimmer).remote_values.get_brightness();"
+
       - if:
           condition:
             - lambda: "return(id(dimmer).remote_values.get_brightness() == 1);"
@@ -151,6 +173,10 @@ globals:
     type: bool
     restore_value: true
     initial_value: ${control_light_default}
+  - id: last_brightness
+    type: float
+    restore_value: no
+    initial_value: '100.0'
 
 # switches to determine light control and dim action
 switch:
@@ -276,20 +302,19 @@ binary_sensor:
           - ON for at most 1s
           - OFF for at least 0.2s
         then:
+          - event.trigger:
+              id: event_entity
+              event_type: "triple_press"
           - if:
               condition:
-                - api.connected:
+                or:
+                  - switch.is_on: control_light_active
+                  - not:
+                      - api.connected:
               then:
-                - event.trigger:
-                    id: event_entity
-                    event_type: "quintuple_press"
-                - homeassistant.event:
-                    event: esphome.button_pressed
-                    data:
-                      device: ${device_name}
-                      click_type: restart
-                      button: "1"
-          - button.press: restart_button
+                - light.turn_on:
+                    id: dimmer
+                    brightness: 50%
       - timing:
           - ON for at most 1s
           - OFF for at most 1s
