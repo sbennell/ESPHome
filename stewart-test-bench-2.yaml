@@ -4,8 +4,8 @@ substitutions:
   device_description: Stewart Test Bench 2
   room: Stewart Desk
 
-  channel_1: Relay 1
-  channel_2: Relay 2
+  channel_1: Shed Tv
+  channel_2: Test Bench Screen
   max_power: "2000.0"
   max_temp: "70.0"
  
@@ -26,7 +26,7 @@ sensor:
   - platform: ade7953_i2c
     irq_pin: GPIO16 # Prevent overheating by setting this
     voltage:
-      name: ${devicename} voltage
+      name: ${friendly_name} voltage
     # On the Shelly 2.5 channels are mixed ch1=B ch2=A
     current_a:
       name: ${channel_2} current
@@ -45,7 +45,7 @@ sensor:
             - homeassistant.service:
                 service: persistent_notification.create
                 data:
-                  title: Message from ${devicename}
+                  title: Message from ${friendly_name}
                 data_template:
                   message: Switch turned off because power exceeded ${max_power}W
     active_power_b:
@@ -61,7 +61,7 @@ sensor:
             - homeassistant.service:
                 service: persistent_notification.create
                 data:
-                  title: Message from ${devicename}
+                  title: Message from ${friendly_name}
                 data_template:
                   message: Switch turned off because power exceeded ${max_power}W
     update_interval: 30s
@@ -85,7 +85,7 @@ sensor:
   # NTC Temperature
   - platform: ntc
     sensor: temp_resistance_reading
-    name: ${devicename} temperature
+    name: ${friendly_name} temperature
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     icon: "mdi:thermometer"
@@ -101,7 +101,7 @@ sensor:
           - homeassistant.service:
               service: persistent_notification.create
               data:
-                title: Message from ${devicename}
+                title: Message from ${friendly_name}
               data_template:
                 message: Switch turned off because temperature exceeded ${max_temp}°C
   - platform: resistance
@@ -121,33 +121,31 @@ status_led:
 switch:
   - platform: gpio
     id: shelly_relay_1
-    name: ${channel_1} relay
+    name: ${channel_1}
     pin: GPIO4
     icon: "mdi:electric-switch"
     restore_mode: RESTORE_DEFAULT_OFF
-    # Ensure only one switch at a time is on (https://esphome.io/components/switch/gpio.html#interlocking)
-    interlock: &interlock_group [shelly_relay_1, shelly_relay_2]
 
   - platform: gpio
     id: shelly_relay_2
-    name: ${channel_2} relay
+    name: ${channel_2}
     pin: GPIO15
     icon: "mdi:electric-switch"
     restore_mode: RESTORE_DEFAULT_OFF
-    interlock: *interlock_group
 
 binary_sensor:
   - platform: gpio
     pin:
       number: GPIO13
     name: "${channel_1} input"
-    on_state:
+    on_press:
       then:
         - switch.toggle: shelly_relay_1
   - platform: gpio
     pin:
       number: GPIO5
     name: "${channel_2} input"
-    on_state:
+    on_press:
       then:
         - switch.toggle: shelly_relay_2
+        
