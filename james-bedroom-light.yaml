@@ -69,8 +69,9 @@ light:
 
     on_turn_on:
       - lambda: |-
-          // Restore the last saved brightness when turned on
-          id(dimmer).set_brightness(id(last_brightness));
+          auto call = id(dimmer).turn_on();
+          call.set_brightness(id(last_brightness));
+          call.perform();
           
     on_state:
       # Track the brightness when the light is turned off
