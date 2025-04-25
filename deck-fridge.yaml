@@ -1,6 +1,6 @@
 substitutions:
   device_name: "deck-fridge"
-  friendly_name: "Shed Fridge"
+  friendly_name: "Deck Fridge"
   device_description: Deck Fridge
   room: "Deck"
 
@@ -18,7 +18,7 @@ esp8266:
 packages:
   minimal: !include /root/config/packages/0_general/minimal.yaml
   basic: !include /root/config/packages/0_general/basic.yaml
-#  arduino: !include /root/config/packages/0_general/arduino.yaml
+  arduino: !include /root/config/packages/0_general/arduino.yaml
 
 uart:
   rx_pin: RX
@@ -137,6 +137,7 @@ text_sensor:
   #  Creates a sensor showing when the device was last restarted
   - platform: template
     name: '${friendly_name} Last Restart'
+    internal: true
     id: device_last_restart
     icon: mdi:clock
     entity_category: diagnostic
