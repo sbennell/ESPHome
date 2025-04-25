@@ -11,7 +11,7 @@ esp32:
 
 packages:
   minimal: !include /root/config/packages/0_general/minimal.yaml
-  basic: !include /root/config/packages/0_general/basic.yaml
+  #basic: !include /root/config/packages/0_general/basic.yaml
   #arduino: !include /root/config/packages/0_general/arduino.yaml
 
 external_components:
@@ -44,6 +44,16 @@ button:
     on_press:
       - rtttl.play: "two short:d=4,o=5,b=100:16e6,16e6"
 
+  - platform: restart
+    name: "${friendly_name} Restart"
+    id: restart_button
+    entity_category: config
+
+  - platform: safe_mode
+    name: "${friendly_name} Safe Mode"
+    internal: false
+    entity_category: config
+
 light:
   - platform: status_led
     name: "D3_LED"
@@ -59,9 +69,23 @@ i2c:
   timeout: 1ms
   id: i2c_a
 
-#time:
-#  - platform: sntp
-#    id: my_time
+time:
+  # Sync time with HA
+  - platform: homeassistant
+    id: time_homeassistant
+    timezone: "Australia/Melbourne"
+
+text_sensor:
+  # IP Address & SSID
+  - platform: wifi_info
+    ip_address:
+      name: "${friendly_name} IP Address"
+      icon: mdi:wifi
+      entity_category: diagnostic
+
+binary_sensor:
+  - platform: status
+    name: "${friendly_name}_status"
 
 # these are called references in YAML. They allow you to reuse
 # this configuration in each sensor, while only defining it once
@@ -84,6 +108,17 @@ i2c:
 
 
 sensor:
+
+    # Uptime sensor (internal only).
+  - platform: uptime
+    id: sensor_uptime
+
+  # WiFi Signal sensor.
+  - platform: wifi_signal
+    name: "${friendly_name} WiFi Signal"
+    icon: mdi:wifi-strength-2
+    update_interval: 60s
+
   - platform: emporia_vue
     i2c_id: i2c_a
     phases:
