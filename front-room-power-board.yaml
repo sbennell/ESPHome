@@ -36,9 +36,6 @@ binary_sensor:
     on_press:
       - switch.toggle: relay3
 
-  - platform: status
-    name: "${friendly_name}_status"
-
 switch:
   - platform: gpio
     id: green_led
