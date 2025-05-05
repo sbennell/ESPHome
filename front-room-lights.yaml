@@ -1,5 +1,6 @@
 substitutions:
   device_name: front-room-lights
+  friendly_name: front-room-lights
   device_description: Computer Room Light
   room: Front Room
   
