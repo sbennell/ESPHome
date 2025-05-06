@@ -82,7 +82,6 @@ output:
 light:
 # RGB light
 - platform: monochromatic
-  name: ${friendly_name} Light
   output: brilliant_smartplug_1_blue_output
   id: brilliant_smartplug_1_blue_led
 
