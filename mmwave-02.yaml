@@ -14,8 +14,11 @@ packages:
   basic: !include /root/config/packages/0_general/basic.yaml
   arduino: !include /root/config/packages/0_general/arduino.yaml
 
-ld2410:
-  id: ld2410_radar
+globals:
+  - id: cpu_speed
+    type: int
+    restore_value: no
+    initial_value: "0"
   
 uart:
   tx_pin: GPIO16
@@ -24,6 +27,10 @@ uart:
   parity: NONE
   stop_bits: 1
 
+ld2410:
+  id: ld2410_radar
+  
+#Configuration entities
 number:
   - platform: ld2410
     timeout:
@@ -77,7 +84,56 @@ number:
         name: g8 move threshold
       still_threshold:
         name: g8 still threshold
+        
+  # Setting ending of zone 1 occupancy
+  - platform: template
+    name: "Radar End Zone 1"
+    id: radar_z1_end
+    device_class: distance
+    min_value: 0
+    max_value: 600
+    step: 1
+    mode: box
+    update_interval: never
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    icon: "mdi:arrow-collapse-right"
+    entity_category: CONFIG
 
+  # Setting ending of zone 2 occupancy
+  - platform: template
+    name: "Radar End Zone 2"
+    id: radar_z2_end
+    device_class: distance
+    min_value: 0
+    max_value: 600
+    step: 1
+    mode: box
+    update_interval: never
+    optimistic: true
+    restore_value: true
+    initial_value: 36
+    icon: "mdi:arrow-collapse-right"
+    entity_category: CONFIG
+
+  # Setting ending of zone 3 occupancy
+  - platform: template
+    name: "Radar End Zone 3"
+    id: radar_z3_end
+    device_class: distance
+    min_value: 0
+    max_value: 600
+    step: 1
+    mode: box
+    update_interval: never
+    optimistic: true
+    restore_value: true
+    initial_value: 100
+    icon: "mdi:arrow-collapse-right"
+    entity_category: CONFIG
+
+#Occupancy sensor
 binary_sensor:
   - platform: ld2410
     has_target:
@@ -87,9 +143,65 @@ binary_sensor:
       name: Radar Moving Target
     has_still_target:
       name: Radar Still Target
+  ## Set Up Radar Zones Based On Distance
+  - platform: template
+    name: "Radar Zone 1 Occupancy"
+    device_class: occupancy
+    icon: mdi:motion-sensor
+    lambda: |-
+      if ((id(radar_has_target).state) && (id(radar_detection_distance).state < id(radar_z1_end).state)) {
+        return true;
+      } else {
+        return false;
+      }
+  - platform: template
+    name: "Radar Zone 2 Occupancy"
+    device_class: occupancy
+    icon: mdi:motion-sensor
+    lambda: |-
+      if ((id(radar_has_target).state) && ((id(radar_z1_end).state < id(radar_detection_distance).state) && (id(radar_detection_distance).state < id(radar_z2_end).state))) {
+        return true;
+      } else {
+        return false;
+      }
+  - platform: template
+    name: "Radar Zone 3 Occupancy"
+    device_class: occupancy
+    icon: mdi:motion-sensor
+    lambda: |-
+      if ((id(radar_has_target).state) && ((id(radar_z2_end).state < id(radar_detection_distance).state) && (id(radar_detection_distance).state < id(radar_z3_end).state))) {
+        return true;
+      } else {
+        return false;
+      }
 
-
+#Exposes configuration and status sensors
 sensor:
+    #Device CPU Speed
+  - platform: template
+    name: "ESP Cpu Speed"
+    accuracy_decimals: 0
+    unit_of_measurement: Mhz
+    lambda: |-
+      return (id(cpu_speed));
+    entity_category: "diagnostic"
+    #Device Memory
+  - platform: template
+    id: esp_memory
+    icon: mdi:memory
+    name: ESP Free Memory
+    lambda: return heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024;
+    unit_of_measurement: "kB"
+    state_class: measurement
+    entity_category: "diagnostic"
+    #Device Temperature
+  - platform: template
+    id: sys_esp_temperature
+    name: ESP Temperature
+    lambda: return temperatureRead();
+    unit_of_measurement: °C
+    device_class: TEMPERATURE
+    update_interval: 60s
   - platform: ld2410
     moving_distance:
       name: Radar Moving Distance
@@ -149,3 +261,36 @@ sensor:
         name: g8 move energy
       still_energy:
         name: g8 still energy
+
+#Exposes control buttons
+button:
+  - platform: ld2410
+    factory_reset:
+      name: "Factory Reset Radar"
+    restart:
+      name: "Restart Radar"
+    query_params:
+      name: query params
+
+#Exposes control switches
+switch:
+  - platform: ld2410
+    bluetooth:
+      name: "Radar Control Bluetooth"
+      id: radar_bluetooth
+    engineering_mode:
+      name: "Radar Engineering Mode"
+time:
+  - platform: sntp
+    id: time_sntp
+
+#Radar firmware version
+text_sensor:
+  - platform: ld2410
+    version:
+      name: "Radar Firmware Version"
+#Set distance resolution - 0.75m or 0.2m
+select:
+  - platform: ld2410
+    distance_resolution:
+      name: "Radar Distance Resolution"
