@@ -1,7 +1,7 @@
 substitutions:
-  device_name: rack-power-2
-  friendly_name: Rack Power 2
-  device_description: Rack Power 2
+  device_name: rack-power-1
+  friendly_name: Rack Power 1
+  device_description: Rack Power 1
   room: rack
 
   channel_1: Relay 1

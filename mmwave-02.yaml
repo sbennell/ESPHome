@@ -1,11 +1,11 @@
 substitutions:
-  device_name: mmwave-01
-  friendly_name: mmwave 1
-  device_description: mmwave-01
+  device_name: mmwave-02
+  friendly_name: mmwave 2
+  device_description: mmwave-02
   room: Test
 
 esp32:
-  board: esp32-c3-devkitm-1
+  board: esp32dev
   framework:
     type: arduino
 
@@ -14,25 +14,12 @@ packages:
   basic: !include /root/config/packages/0_general/basic.yaml
   arduino: !include /root/config/packages/0_general/arduino.yaml
 
-light:
-  - platform: status_led
-    name: "Status LED"
-    id: led
-    pin: GPIO02
-    disabled_by_default: true
-    entity_category: config
-
-i2c:
-  sda: GPIO18
-  scl: GPIO19
-  scan: true
-
 ld2410:
   id: ld2410_radar
   
 uart:
-  tx_pin: GPIO5
-  rx_pin: GPIO8
+  tx_pin: GPIO16
+  rx_pin: GPIO17
   baud_rate: 256000
   parity: NONE
   stop_bits: 1
@@ -101,54 +88,6 @@ binary_sensor:
     has_still_target:
       name: Radar Still Target
 
-  - platform: gpio
-    pin:
-      number: GPIO03
-      mode:
-        input: true
-        pullup: true
-    name: "Pir Sensor"
-    id: pir
-    filters:
-      - delayed_on: 50ms
-      - delayed_off: 10s
-    device_class: motion
-    on_press:
-      if:
-        condition:
-          switch.is_on: presence_light
-        then:
-          - light.turn_on: led
-
-  - platform: gpio
-    pin:
-      number: GPIO04
-      mode:
-        input: true
-        pullup: true
-    name: "mmWave Sensor"
-    id: mmwave
-    filters:
-      - delayed_on: 50ms
-    device_class: motion
-    on_release:
-      then:
-        - light.turn_off: led
-
-  - platform: template
-    name: "Occupancy"
-    id: occupancy
-    device_class: occupancy
-    lambda: |-
-      if ( id(mmwave).state and id(pir).state) {
-        return true;
-      }
-      else if (id(mmwave).state == 0) {
-        return false;
-      }
-      else {
-        return id(occupancy).state;
-      }
 
 sensor:
   - platform: ld2410
@@ -210,24 +149,3 @@ sensor:
         name: g8 move energy
       still_energy:
         name: g8 still energy
-
-  - platform: bh1750
-    name: "Light Sensor"
-    address: 0x23
-    update_interval: 5s
-
-switch:
-  - platform: template
-    name: Presence Light
-    id: presence_light
-    entity_category: config
-    optimistic: true
-    restore_mode: RESTORE_DEFAULT_ON
-    on_turn_on:
-      if:
-        condition:
-          binary_sensor.is_on: occupancy
-        then:
-          - light.turn_on: led
-    on_turn_off:
-      - light.turn_off: led
