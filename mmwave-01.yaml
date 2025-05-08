@@ -5,7 +5,7 @@ substitutions:
   room: Test
 
 esp32:
-  board: esp32-c3-devkitm-1
+  board: esp32dev
   framework:
     type: arduino
 
@@ -14,29 +14,16 @@ packages:
   basic: !include /root/config/packages/0_general/basic.yaml
   arduino: !include /root/config/packages/0_general/arduino.yaml
 
-light:
-  - platform: status_led
-    name: "Status LED"
-    id: led
-    pin: GPIO02
-    disabled_by_default: true
-    entity_category: config
-
 ld2410:
   id: ld2410_radar
-
-i2c:
-  sda: GPIO18
-  scl: GPIO19
-  scan: true
-
+  
 uart:
-  tx_pin: GPIO08
-  rx_pin: GPIO05
+  tx_pin: GPIO16
+  rx_pin: GPIO17
   baud_rate: 256000
   parity: NONE
   stop_bits: 1
-  
+
 number:
   - platform: ld2410
     timeout:
