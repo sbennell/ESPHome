@@ -90,6 +90,51 @@ number:
         name: g8 move threshold
       still_threshold:
         name: g8 still threshold
+  
+  - platform: template
+    name: "Radar End Zone 1"
+    id: radar_z1_end
+    device_class: distance
+    min_value: 0
+    max_value: 600
+    step: 1
+    mode: box
+    update_interval: never
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    icon: "mdi:arrow-collapse-right"
+    entity_category: CONFIG
+
+  - platform: template
+    name: "Radar End Zone 2"
+    id: radar_z2_end
+    device_class: distance
+    min_value: 0
+    max_value: 600
+    step: 1
+    mode: box
+    update_interval: never
+    optimistic: true
+    restore_value: true
+    initial_value: 36
+    icon: "mdi:arrow-collapse-right"
+    entity_category: CONFIG
+
+  - platform: template
+    name: "Radar End Zone 3"
+    id: radar_z3_end
+    device_class: distance
+    min_value: 0
+    max_value: 600
+    step: 1
+    mode: box
+    update_interval: never
+    optimistic: true
+    restore_value: true
+    initial_value: 100
+    icon: "mdi:arrow-collapse-right"
+    entity_category: CONFIG
 
 binary_sensor:
   - platform: ld2410
@@ -100,6 +145,42 @@ binary_sensor:
       name: Radar Moving Target
     has_still_target:
       name: Radar Still Target
+
+  - platform: template
+    name: "Radar Zone 1 Occupancy"
+    device_class: occupancy
+    icon: mdi:motion-sensor
+    lambda: |-
+      if (!id(radar_detection_distance).has_state() || !id(radar_has_target).has_state()) return false;
+      if ((id(radar_has_target).state) && (id(radar_detection_distance).state < id(radar_z1_end).state)) {
+        return true;
+      } else {
+        return false;
+      }
+
+  - platform: template
+    name: "Radar Zone 2 Occupancy"
+    device_class: occupancy
+    icon: mdi:motion-sensor
+    lambda: |-
+      if (!id(radar_detection_distance).has_state() || !id(radar_has_target).has_state()) return false;
+      if ((id(radar_has_target).state) && ((id(radar_z1_end).state < id(radar_detection_distance).state) && (id(radar_detection_distance).state < id(radar_z2_end).state))) {
+        return true;
+      } else {
+        return false;
+      }
+
+  - platform: template
+    name: "Radar Zone 3 Occupancy"
+    device_class: occupancy
+    icon: mdi:motion-sensor
+    lambda: |-
+      if (!id(radar_detection_distance).has_state() || !id(radar_has_target).has_state()) return false;
+      if ((id(radar_has_target).state) && ((id(radar_z2_end).state < id(radar_detection_distance).state) && (id(radar_detection_distance).state < id(radar_z3_end).state))) {
+        return true;
+      } else {
+        return false;
+      }
 
   - platform: gpio
     pin:
@@ -120,35 +201,21 @@ binary_sensor:
         then:
           - light.turn_on: led
 
-  - platform: gpio
-    pin:
-      number: GPIO04
-      mode:
-        input: true
-        pullup: true
-    name: "mmWave Sensor"
-    id: mmwave
-    filters:
-      - delayed_on: 50ms
-    device_class: motion
-    on_release:
-      then:
-        - light.turn_off: led
+  - platform: template
+    name: "Radar Presence"
+    device_class: presence
+    lambda: |-
+      return id(radar_has_target).state;
 
   - platform: template
     name: "Occupancy"
     id: occupancy
     device_class: occupancy
     lambda: |-
-      if ( id(mmwave).state and id(pir).state) {
+      if (id(radar_has_target).state || id(pir).state) {
         return true;
       }
-      else if (id(mmwave).state == 0) {
-        return false;
-      }
-      else {
-        return id(occupancy).state;
-      }
+      return false;
 
 sensor:
   - platform: ld2410
@@ -216,7 +283,19 @@ sensor:
     address: 0x23
     update_interval: 5s
 
+button:
+  - platform: ld2410
+    query_params:
+      name: query params
+
 switch:
+  - platform: ld2410
+    bluetooth:
+      name: "Radar Control Bluetooth"
+      id: radar_bluetooth
+    engineering_mode:
+      name: "Radar Engineering Mode"
+
   - platform: template
     name: Presence Light
     id: presence_light
@@ -231,3 +310,23 @@ switch:
           - light.turn_on: led
     on_turn_off:
       - light.turn_off: led
+
+text_sensor:
+  - platform: ld2410
+    version:
+      name: "Radar Firmware Version"
+
+select:
+  - platform: ld2410
+    distance_resolution:
+      name: "Radar Distance Resolution"
+
+interval:
+  - interval: 60s
+    then:
+      - lambda: |-
+          if (!(id(radar_z1_end).state < id(radar_z2_end).state && id(radar_z2_end).state < id(radar_z3_end).state)) {
+            ESP_LOGW("mmwave", "Radar zone ends are not in ascending order!");
+          } else {
+            ESP_LOGI("mmwave", "Radar zone ends are in ascending order.");
+          }

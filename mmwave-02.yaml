@@ -15,11 +15,11 @@ packages:
   arduino: !include /root/config/packages/0_general/arduino.yaml
 
 globals:
-  - id: cpu_speed
+  - id: uart_failure_count
     type: int
     restore_value: no
-    initial_value: "0"
-  
+    initial_value: '0'
+
 uart:
   tx_pin: GPIO16
   rx_pin: GPIO17
@@ -29,8 +29,7 @@ uart:
 
 ld2410:
   id: ld2410_radar
-  
-#Configuration entities
+
 number:
   - platform: ld2410
     timeout:
@@ -84,8 +83,7 @@ number:
         name: g8 move threshold
       still_threshold:
         name: g8 still threshold
-        
-  # Setting ending of zone 1 occupancy
+
   - platform: template
     name: "Radar End Zone 1"
     id: radar_z1_end
@@ -101,7 +99,6 @@ number:
     icon: "mdi:arrow-collapse-right"
     entity_category: CONFIG
 
-  # Setting ending of zone 2 occupancy
   - platform: template
     name: "Radar End Zone 2"
     id: radar_z2_end
@@ -117,7 +114,6 @@ number:
     icon: "mdi:arrow-collapse-right"
     entity_category: CONFIG
 
-  # Setting ending of zone 3 occupancy
   - platform: template
     name: "Radar End Zone 3"
     id: radar_z3_end
@@ -133,7 +129,6 @@ number:
     icon: "mdi:arrow-collapse-right"
     entity_category: CONFIG
 
-#Occupancy sensor
 binary_sensor:
   - platform: ld2410
     has_target:
@@ -143,7 +138,7 @@ binary_sensor:
       name: Radar Moving Target
     has_still_target:
       name: Radar Still Target
-  ## Set Up Radar Zones Based On Distance
+
   - platform: template
     name: "Radar Zone 1 Occupancy"
     device_class: occupancy
@@ -154,6 +149,7 @@ binary_sensor:
       } else {
         return false;
       }
+
   - platform: template
     name: "Radar Zone 2 Occupancy"
     device_class: occupancy
@@ -164,6 +160,7 @@ binary_sensor:
       } else {
         return false;
       }
+
   - platform: template
     name: "Radar Zone 3 Occupancy"
     device_class: occupancy
@@ -175,33 +172,13 @@ binary_sensor:
         return false;
       }
 
-#Exposes configuration and status sensors
-sensor:
-    #Device CPU Speed
   - platform: template
-    name: "ESP Cpu Speed"
-    accuracy_decimals: 0
-    unit_of_measurement: Mhz
+    name: "Radar Presence"
+    device_class: presence
     lambda: |-
-      return (id(cpu_speed));
-    entity_category: "diagnostic"
-    #Device Memory
-  - platform: template
-    id: esp_memory
-    icon: mdi:memory
-    name: ESP Free Memory
-    lambda: return heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024;
-    unit_of_measurement: "kB"
-    state_class: measurement
-    entity_category: "diagnostic"
-    #Device Temperature
-  - platform: template
-    id: sys_esp_temperature
-    name: ESP Temperature
-    lambda: return temperatureRead();
-    unit_of_measurement: °C
-    device_class: TEMPERATURE
-    update_interval: 60s
+      return id(radar_has_target).state;
+
+sensor:
   - platform: ld2410
     moving_distance:
       name: Radar Moving Distance
@@ -262,7 +239,6 @@ sensor:
       still_energy:
         name: g8 still energy
 
-#Exposes control buttons
 button:
   - platform: ld2410
     factory_reset:
@@ -272,7 +248,6 @@ button:
     query_params:
       name: query params
 
-#Exposes control switches
 switch:
   - platform: ld2410
     bluetooth:
@@ -280,17 +255,25 @@ switch:
       id: radar_bluetooth
     engineering_mode:
       name: "Radar Engineering Mode"
+
 time:
   - platform: sntp
     id: time_sntp
 
-#Radar firmware version
 text_sensor:
   - platform: ld2410
     version:
       name: "Radar Firmware Version"
-#Set distance resolution - 0.75m or 0.2m
+
 select:
   - platform: ld2410
     distance_resolution:
       name: "Radar Distance Resolution"
+
+interval:
+  - interval: 60s
+    then:
+      - lambda: |-
+          if (!(id(radar_z1_end).state < id(radar_z2_end).state && id(radar_z2_end).state < id(radar_z3_end).state)) {
+            ESP_LOGW("mmwave", "Radar zone ends are not in ascending order!");
+          }
