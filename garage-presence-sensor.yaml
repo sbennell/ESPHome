@@ -13,7 +13,8 @@ packages:
   minimal: !include /root/config/packages/0_general/minimal.yaml
   basic: !include /root/config/packages/0_general/basic.yaml
   arduino: !include /root/config/packages/0_general/arduino.yaml
-
+  bt_proxy: !include /root/config/packages/0_general/bt_proxy.yaml
+  
 light:
   - platform: status_led
     name: "Status LED"
