@@ -2,7 +2,7 @@ substitutions:
   device_name: mmwave-01
   friendly_name: mmwave 1
   device_description: mmwave-01
-  room: Test
+  room: Unit Main Room
 
 esp32:
   board: esp32-c3-devkitm-1
