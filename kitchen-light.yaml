@@ -66,8 +66,11 @@ binary_sensor:
     - min_length: 501ms
       max_length: 4000ms
       then:
-        - homeassistant.event:
-            event: esphome.automation.media_toggle_pressed
+        - homeassistant.action:
+            action: script.toggle_media_player_from_button
+        #- homeassistant.event:
+        #    event: esphome.media_toggle_pressed
+
 
 
 output:
