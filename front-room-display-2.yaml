@@ -22,6 +22,6 @@ output:
 
 light:
   - platform: monochromatic
-    name: "Display Cabinet 1 Light"
+    name: "Display Cabinet 2 Light"
     default_transition_length: 1s
     output: pwm_output
