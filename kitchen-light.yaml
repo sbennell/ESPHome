@@ -66,10 +66,9 @@ binary_sensor:
     - min_length: 501ms
       max_length: 4000ms
       then:
-        - homeassistant.service:
-            service: switch.toggle
-            data:
-              entity_id: switch.radio
+        - homeassistant.event:
+            event: esphome.media_toggle_pressed
+
 
 output:
   - platform: gpio
