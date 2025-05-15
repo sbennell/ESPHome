@@ -1,0 +1,16 @@
+substitutions:
+  device_name: shed-bt-proxy-1
+  friendly_name: Shed BT Proxy 1
+  device_description: shed-bt-proxy-1
+  room: "shed"
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+packages:
+  minimal: !include /root/config/packages/0_general/minimal.yaml
+  basic: !include /root/config/packages/0_general/basic.yaml
+  arduino: !include /root/config/packages/0_general/arduino.yaml
+  bt_proxy: !include /root/config/packages/0_general/bt_proxy.yaml
