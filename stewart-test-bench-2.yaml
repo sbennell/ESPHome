@@ -7,7 +7,7 @@ substitutions:
   channel_1: Shed Tv
   channel_2: Test Bench Screen
   max_power: "2000.0"
-  max_temp: "70.0"
+  max_temp: "100.0"
  
 esp8266:
   board: esp01_1m
