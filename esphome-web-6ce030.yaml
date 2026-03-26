@@ -9,8 +9,8 @@
 # ============================================================
 
 substitutions:
-  name: esphome-web-b4e96c
-  friendly_name: Louder-ESP32-S3-Plus
+  name: speaker-house-01
+  friendly_name: "Kitchen and Front Room"
   task_stack_in_psram: "true" 
 
   # Board-specific pinout configuration
