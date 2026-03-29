@@ -95,9 +95,9 @@ ota:
   platform: esphome 
   password: !secret ESPHomeOTA
 
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+#wifi:
+#  ssid: !secret wifi_ssid
+#  password: !secret wifi_password
 
 psram:
   mode: octal
@@ -129,10 +129,10 @@ packages:
       - firmware/esphome/packages/light.yaml
       - firmware/esphome/packages/ir-receiver.yaml
       - firmware/esphome/packages/monitoring.yaml
-      - firmware/esphome/packages/monitoring-wifi.yaml
-      - firmware/esphome/packages/oled.yaml
+      #- firmware/esphome/packages/monitoring-wifi.yaml
+      #- firmware/esphome/packages/oled.yaml
       # Optional ethernet (replace wifi config if you use this, you need to exclude OLED package if you do this to free up SPI bus)
-      # - firmware/esphome/packages/ethernet-w5500.yaml
+      - firmware/esphome/packages/ethernet-w5500.yaml
 
   # # Debug/local development fallback:
   # external_dac: !include packages/dac-tas58xx.yaml
