@@ -1,8 +1,8 @@
 substitutions:
-  device_name: "stewart-desk-power-monitoring"
-  friendly_name: "Stewart Desk Power"
-  device_description: Stewart Desk Power Monitoring
-  room: "Stewart Desk"
+  device_name: "shed-camera-display"
+  friendly_name: "Shed Camera Display"
+  device_description: Shed Camera Display
+  room: "Shed"
   relay_restore_mode: "ALWAYS_ON"
   sensor_update_interval: "10s"
   # Current Limit in Amps. AU Plug = 10. IL, BR, EU, UK, US Plug = 16.
@@ -17,7 +17,7 @@ esp8266:
 packages:
   minimal: !include /root/config/packages/0_general/minimal.yaml
   basic: !include /root/config/packages/0_general/basic.yaml
-#  arduino: !include /root/config/packages/0_general/arduino.yaml
+  arduino: !include /root/config/packages/0_general/arduino.yaml
 
 uart:
   rx_pin: RX

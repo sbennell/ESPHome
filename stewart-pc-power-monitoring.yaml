@@ -1,9 +1,9 @@
 substitutions:
-  device_name: "stewart-pc-power-monitoring"
-  friendly_name: "Stewart Computer"
-  device_description: Stewart PC Power Monitoring
-  room: "Stewart Desk"
-  relay_restore_mode: "ALWAYS_ON"
+  device_name: "shed-printer"
+  friendly_name: "Shed Printer"
+  device_description: Shed Printer
+  room: "Shed"
+  relay_restore_mode: "ALWAYS_OFF"
   sensor_update_interval: "10s"
   # Current Limit in Amps. AU Plug = 10. IL, BR, EU, UK, US Plug = 16.
   current_limit : "10"
@@ -17,7 +17,7 @@ esp8266:
 packages:
   minimal: !include /root/config/packages/0_general/minimal.yaml
   basic: !include /root/config/packages/0_general/basic.yaml
-#  arduino: !include /root/config/packages/0_general/arduino.yaml
+  arduino: !include /root/config/packages/0_general/arduino.yaml
 
 uart:
   rx_pin: RX
